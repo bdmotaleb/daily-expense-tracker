@@ -6,8 +6,11 @@ import path from 'path';
 
 export default defineConfig({
     server: {
-        host: '127.0.0.1',
+        host: process.env.DOCKER ? '0.0.0.0' : '127.0.0.1',
         port: 5173,
+        hmr: {
+            host: process.env.DOCKER ? 'localhost' : 'localhost',
+        },
     },
     plugins: [
         vue(),
