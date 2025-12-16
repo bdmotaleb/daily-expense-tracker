@@ -21,7 +21,9 @@ class CategoryController extends Controller
         $user = $request->user();
 
         $categories = Category::query()
-            ->where('type', 'expense')
+            ->when($request->has('type'), function ($q) use ($request) {
+                $q->where('type', $request->input('type'));
+            })
             ->where(function ($q) use ($user) {
                 $q->whereNull('user_id')
                     ->orWhere('user_id', $user->id);

@@ -27,9 +27,11 @@
             <tbody>
                 @foreach ($rows as $row)
                     <tr>
-                        <td>{{ $row->date }}</td>
+                        <td>
+                            {{ $row->date instanceof \Carbon\Carbon ? $row->date->toDateString() : \Carbon\Carbon::parse($row->date)->toDateString() }}
+                        </td>
                         <td>{{ $row->category_name ?? $row->source ?? '' }}</td>
-                        <td>{{ number_format($row->amount, 2) }}</td>
+                        <td style="text-align: right">{{ number_format($row->amount, 2) }}</td>
                         <td>{{ $row->note ?? '' }}</td>
                     </tr>
                 @endforeach

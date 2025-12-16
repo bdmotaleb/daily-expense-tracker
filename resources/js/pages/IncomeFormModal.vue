@@ -41,12 +41,20 @@
           <label class="mb-1 block text-xs font-medium text-slate-300" for="source">
             Source
           </label>
-          <input
+          <select
             id="source"
             v-model="localForm.source"
-            type="text"
             class="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-50 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/60"
-          />
+          >
+            <option value="" disabled>Select source</option>
+            <option
+              v-for="c in incomeCategories"
+              :key="c.id"
+              :value="c.name"
+            >
+              {{ c.name }}
+            </option>
+          </select>
         </div>
 
         <div class="space-y-1.5">
@@ -82,7 +90,8 @@
 </template>
 
 <script setup>
-import { computed, watch, reactive } from 'vue';
+import { computed, watch, reactive, ref, onMounted } from 'vue';
+import { api } from '@/bootstrap';
 
 const props = defineProps({
   open: { type: Boolean, default: false },
@@ -104,6 +113,19 @@ const localForm = reactive({
   note: '',
 });
 
+const incomeCategories = ref([]);
+
+const loadIncomeCategories = async () => {
+  try {
+    const { data } = await api.get('/categories', {
+      params: { type: 'income' },
+    });
+    incomeCategories.value = data.data || data;
+  } catch (e) {
+    incomeCategories.value = [];
+  }
+};
+
 watch(
   () => props.income,
   (value) => {
@@ -123,6 +145,8 @@ watch(
   },
   { immediate: true }
 );
+
+onMounted(loadIncomeCategories);
 
 const submit = () => {
   emit('save', {
