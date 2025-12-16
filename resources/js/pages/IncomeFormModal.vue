@@ -1,16 +1,16 @@
 <template>
   <div
     v-if="open"
-    class="fixed inset-0 z-30 flex items-center justify-center bg-black/40"
+    class="fixed inset-0 z-30 flex items-center justify-center bg-black/60 backdrop-blur"
   >
-    <div class="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
-      <h2 class="mb-4 text-lg font-semibold">
+    <div class="w-full max-w-md rounded-2xl bg-slate-950/95 p-6 text-slate-100 shadow-2xl ring-1 ring-slate-700">
+      <h2 class="mb-4 text-lg font-semibold tracking-tight">
         {{ isEdit ? 'Edit Income' : 'Add Income' }}
       </h2>
 
-      <form @submit.prevent="submit">
-        <div class="mb-3">
-          <label class="mb-1 block text-sm font-medium" for="date">
+      <form class="space-y-4" @submit.prevent="submit">
+        <div class="space-y-1.5">
+          <label class="mb-1 block text-xs font-medium text-slate-300" for="date">
             Date
           </label>
           <input
@@ -18,12 +18,12 @@
             v-model="localForm.date"
             type="date"
             required
-            class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-indigo-200"
+            class="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-50 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/60"
           />
         </div>
 
-        <div class="mb-3">
-          <label class="mb-1 block text-sm font-medium" for="amount">
+        <div class="space-y-1.5">
+          <label class="mb-1 block text-xs font-medium text-slate-300" for="amount">
             Amount
           </label>
           <input
@@ -33,45 +33,45 @@
             step="0.01"
             min="0"
             required
-            class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-indigo-200"
+            class="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-50 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/60"
           />
         </div>
 
-        <div class="mb-3">
-          <label class="mb-1 block text-sm font-medium" for="source">
+        <div class="space-y-1.5">
+          <label class="mb-1 block text-xs font-medium text-slate-300" for="source">
             Source
           </label>
           <input
             id="source"
             v-model="localForm.source"
             type="text"
-            class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-indigo-200"
+            class="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-50 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/60"
           />
         </div>
 
-        <div class="mb-4">
-          <label class="mb-1 block text-sm font-medium" for="note">
+        <div class="space-y-1.5">
+          <label class="mb-1 block text-xs font-medium text-slate-300" for="note">
             Note
           </label>
           <textarea
             id="note"
             v-model="localForm.note"
             rows="3"
-            class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-indigo-200"
+            class="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-50 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/60"
           ></textarea>
         </div>
 
-        <div class="flex justify-end gap-2">
+        <div class="flex justify-end gap-2 pt-2">
           <button
             type="button"
-            class="rounded border border-gray-300 px-3 py-1.5 text-sm"
+            class="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-200 ring-1 ring-slate-600 transition hover:bg-slate-800"
             @click="$emit('close')"
           >
             Cancel
           </button>
           <button
             type="submit"
-            class="rounded bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
+            class="rounded-lg bg-emerald-600 px-4 py-1.5 text-sm font-semibold text-white shadow-sm ring-1 ring-emerald-500/60 transition hover:bg-emerald-500 hover:shadow-md"
           >
             {{ isEdit ? 'Save Changes' : 'Add Income' }}
           </button>

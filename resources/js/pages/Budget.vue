@@ -1,121 +1,138 @@
 <template>
-  <div class="space-y-4">
-    <div class="flex items-center justify-between">
-      <h2 class="text-2xl font-semibold">Budgets</h2>
-      <div class="flex items-center gap-2">
-        <label class="text-sm text-gray-700" for="month">Month</label>
+  <div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 class="text-xl font-semibold tracking-tight text-slate-50 sm:text-2xl">
+          Budgets
+        </h2>
+        <p class="text-xs text-slate-400 sm:text-sm">
+          Set and track monthly limits for each category.
+        </p>
+      </div>
+      <div class="flex items-center gap-3 rounded-2xl bg-slate-900/80 px-3 py-2 text-xs text-slate-200 ring-1 ring-slate-700">
+        <span class="hidden text-[11px] font-medium text-slate-400 sm:inline">
+          Month
+        </span>
         <input
           id="month"
           v-model="month"
           type="month"
-          class="rounded border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring focus:ring-indigo-200"
+          class="w-32 rounded-lg border border-slate-700 bg-slate-950/60 px-2 py-1.5 text-xs text-slate-100 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/60"
           @change="loadBudgets"
         />
       </div>
     </div>
 
-    <div v-if="error" class="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+    <!-- Error -->
+    <div
+      v-if="error"
+      class="rounded-xl border border-red-400/60 bg-red-500/10 px-4 py-3 text-sm text-red-100"
+    >
       {{ error }}
     </div>
 
-    <div class="overflow-x-auto rounded border border-gray-200 bg-white">
-      <table class="min-w-full divide-y divide-gray-200 text-sm">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-4 py-2 text-left font-medium text-gray-700">
-              Category
-            </th>
-            <th class="px-4 py-2 text-right font-medium text-gray-700">
-              Budget
-            </th>
-            <th class="px-4 py-2 text-right font-medium text-gray-700">
-              Spent
-            </th>
-            <th class="px-4 py-2 text-right font-medium text-gray-700">
-              Remaining
-            </th>
-            <th class="px-4 py-2 font-medium text-gray-700">
-              Progress
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-if="loading">
-            <td colspan="5" class="px-4 py-4 text-center text-gray-500">
-              Loading budget summary...
-            </td>
-          </tr>
-          <tr v-else-if="!rows.length">
-            <td colspan="5" class="px-4 py-4 text-center text-gray-500">
-              No categories available.
-            </td>
-          </tr>
-          <tr
-            v-else
-            v-for="row in rows"
-            :key="row.category_id"
-            class="hover:bg-gray-50"
-          >
-            <td class="px-4 py-2 align-top text-gray-900">
-              <div class="flex items-center gap-2">
-                <span
-                  v-if="row.category_color"
-                  class="inline-block h-3 w-3 rounded-full border"
-                  :style="{ backgroundColor: row.category_color }"
-                ></span>
-                <span>{{ row.category_name }}</span>
-              </div>
-            </td>
-            <td class="px-4 py-2 align-top text-right">
-              <input
-                v-model.number="row.editBudget"
-                type="number"
-                min="0"
-                step="0.01"
-                class="w-24 rounded border border-gray-300 px-2 py-1 text-right text-sm focus:outline-none focus:ring focus:ring-indigo-200"
-              />
-            </td>
-            <td class="px-4 py-2 align-top text-right text-gray-900">
-              {{ formatMoney(row.spent) }}
-            </td>
-            <td
-              class="px-4 py-2 align-top text-right"
-              :class="row.over_budget ? 'text-red-600 font-semibold' : 'text-gray-900'"
+    <!-- Table -->
+    <div class="overflow-hidden rounded-2xl bg-slate-900/80 shadow-lg ring-1 ring-slate-800">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-800 text-xs sm:text-sm">
+          <thead class="bg-slate-900/80">
+            <tr>
+              <th class="px-4 py-2 text-left text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Category
+              </th>
+              <th class="px-4 py-2 text-right text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Budget
+              </th>
+              <th class="px-4 py-2 text-right text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Spent
+              </th>
+              <th class="px-4 py-2 text-right text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Remaining
+              </th>
+              <th class="px-4 py-2 text-left text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Progress
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/80">
+            <tr v-if="loading">
+              <td colspan="5" class="px-4 py-6 text-center text-slate-400">
+                Loading budget summary...
+              </td>
+            </tr>
+            <tr v-else-if="!rows.length">
+              <td colspan="5" class="px-4 py-6 text-center text-slate-400">
+                No categories available.
+              </td>
+            </tr>
+            <tr
+              v-else
+              v-for="row in rows"
+              :key="row.category_id"
+              class="bg-slate-900/60 transition hover:bg-slate-800/80"
             >
-              {{ formatMoney(row.remaining) }}
-            </td>
-            <td class="px-4 py-2 align-top">
-              <div class="mb-1 flex items-center justify-between text-xs">
-                <span
-                  :class="row.over_budget ? 'text-red-700 font-semibold' : 'text-gray-700'"
-                >
-                  {{ row.progress }}%
-                </span>
-                <span
-                  v-if="row.over_budget"
-                  class="rounded bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700"
-                >
-                  Over budget!
-                </span>
-              </div>
-              <div class="h-2 w-full rounded-full bg-gray-100">
-                <div
-                  class="h-2 rounded-full"
-                  :class="row.over_budget ? 'bg-red-500' : 'bg-indigo-500'"
-                  :style="{ width: row.progress + '%' }"
-                ></div>
-              </div>
-              <button
-                type="button"
-                class="mt-2 text-xs font-medium text-indigo-600 hover:underline"
-                @click="saveRow(row)"
+              <td class="px-4 py-2 align-top text-slate-100">
+                <div class="flex items-center gap-2">
+                  <span
+                    v-if="row.category_color"
+                    class="inline-block h-3 w-3 rounded-full border border-slate-700"
+                    :style="{ backgroundColor: row.category_color }"
+                  ></span>
+                  <span>{{ row.category_name }}</span>
+                </div>
+              </td>
+              <td class="px-4 py-2 align-top text-right">
+                <input
+                  v-model.number="row.editBudget"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  class="w-24 rounded-lg border border-slate-700 bg-slate-950/60 px-2 py-1 text-right text-xs text-slate-100 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/60"
+                />
+              </td>
+              <td class="px-4 py-2 align-top text-right text-slate-100">
+                {{ formatMoney(row.spent) }}
+              </td>
+              <td
+                class="px-4 py-2 align-top text-right"
+                :class="row.over_budget ? 'text-rose-300 font-semibold' : 'text-slate-100'"
               >
-                Save
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                {{ formatMoney(row.remaining) }}
+              </td>
+              <td class="px-4 py-2 align-top">
+                <div class="mb-1 flex items-center justify-between text-[11px]">
+                  <span
+                    :class="row.over_budget ? 'text-rose-300 font-semibold' : 'text-slate-300'"
+                  >
+                    {{ row.progress }}%
+                  </span>
+                  <span
+                    v-if="row.over_budget"
+                    class="rounded-full bg-rose-500/10 px-2 py-0.5 text-[10px] font-medium text-rose-200 ring-1 ring-rose-400/60"
+                  >
+                    Over budget
+                  </span>
+                </div>
+                <div class="h-2 w-full rounded-full bg-slate-800">
+                  <div
+                    class="h-2 rounded-full"
+                    :class="row.over_budget ? 'bg-rose-500' : 'bg-indigo-500'"
+                    :style="{ width: row.progress + '%' }"
+                  ></div>
+                </div>
+                <button
+                  type="button"
+                  class="mt-2 text-[11px] font-medium text-indigo-300 transition hover:text-indigo-100"
+                  @click="saveRow(row)"
+                >
+                  Save
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>

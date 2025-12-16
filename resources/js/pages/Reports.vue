@@ -1,158 +1,183 @@
 <template>
   <div class="space-y-6">
-    <div class="flex items-center justify-between">
+    <!-- Header -->
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h2 class="text-2xl font-semibold">Reports</h2>
-        <p class="text-sm text-gray-600">
-          Export filtered income and expense data.
+        <h2 class="text-xl font-semibold tracking-tight text-slate-50 sm:text-2xl">
+          Reports
+        </h2>
+        <p class="text-xs text-slate-400 sm:text-sm">
+          Filter, review, and export your income and expense history.
         </p>
       </div>
     </div>
 
-    <div class="rounded bg-white p-4 shadow-sm">
-      <form class="grid gap-4 md:grid-cols-4" @submit.prevent="loadReport">
-        <div>
-          <label class="mb-1 block text-xs font-medium text-gray-600">
-            Type
-          </label>
-          <select
-            v-model="filters.type"
-            class="w-full rounded border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring focus:ring-indigo-200"
-          >
-            <option value="expense">Expense</option>
-            <option value="income">Income</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="mb-1 block text-xs font-medium text-gray-600">
-            From
-          </label>
-          <input
-            v-model="filters.from"
-            type="date"
-            class="w-full rounded border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring focus:ring-indigo-200"
-          />
-        </div>
-
-        <div>
-          <label class="mb-1 block text-xs font-medium text-gray-600">
-            To
-          </label>
-          <input
-            v-model="filters.to"
-            type="date"
-            class="w-full rounded border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring focus:ring-indigo-200"
-          />
-        </div>
-
-        <div v-if="filters.type === 'expense'">
-          <label class="mb-1 block text-xs font-medium text-gray-600">
-            Category
-          </label>
-          <select
-            v-model="filters.category_id"
-            class="w-full rounded border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring focus:ring-indigo-200"
-          >
-            <option value="">All</option>
-            <option
-              v-for="c in categories"
-              :key="c.id"
-              :value="c.id"
+    <!-- Filters -->
+    <div
+      class="rounded-2xl bg-slate-900/80 p-4 text-xs text-slate-200 shadow-sm ring-1 ring-slate-800 backdrop-blur"
+    >
+      <form class="space-y-4" @submit.prevent="loadReport">
+        <div class="grid gap-3 md:grid-cols-4">
+          <div class="space-y-1.5">
+            <label class="mb-1 block text-[11px] font-medium text-slate-400">
+              Type
+            </label>
+            <select
+              v-model="filters.type"
+              class="w-full rounded-lg border border-slate-700/80 bg-slate-950/70 px-2.5 py-2 text-xs text-slate-100 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/60"
             >
-              {{ c.name }}
-            </option>
-          </select>
+              <option value="expense">Expense</option>
+              <option value="income">Income</option>
+            </select>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="mb-1 block text-[11px] font-medium text-slate-400">
+              From
+            </label>
+            <input
+              v-model="filters.from"
+              type="date"
+              class="w-full rounded-lg border border-slate-700/80 bg-slate-950/70 px-2.5 py-2 text-xs text-slate-100 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/60"
+            />
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="mb-1 block text-[11px] font-medium text-slate-400">
+              To
+            </label>
+            <input
+              v-model="filters.to"
+              type="date"
+              class="w-full rounded-lg border border-slate-700/80 bg-slate-950/70 px-2.5 py-2 text-xs text-slate-100 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/60"
+            />
+          </div>
+
+          <div
+            v-if="filters.type === 'expense'"
+            class="space-y-1.5"
+          >
+            <label class="mb-1 block text-[11px] font-medium text-slate-400">
+              Category
+            </label>
+            <select
+              v-model="filters.category_id"
+              class="w-full rounded-lg border border-slate-700/80 bg-slate-950/70 px-2.5 py-2 text-xs text-slate-100 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/60"
+            >
+              <option value="">All</option>
+              <option
+                v-for="c in categories"
+                :key="c.id"
+                :value="c.id"
+              >
+                {{ c.name }}
+              </option>
+            </select>
+          </div>
         </div>
 
-        <div class="flex items-end gap-2 md:col-span-4">
+        <div class="flex flex-wrap items-center gap-2 pt-1">
           <button
             type="submit"
-            class="rounded bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
+            class="inline-flex items-center rounded-lg bg-slate-100 px-4 py-1.5 text-xs font-semibold text-slate-900 shadow-sm transition hover:bg-white"
           >
             Apply Filters
           </button>
           <button
             type="button"
-            class="rounded bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            class="inline-flex items-center rounded-lg bg-slate-800/80 px-3 py-1.5 text-[11px] font-medium text-slate-200 ring-1 ring-slate-700/80 transition hover:bg-slate-700"
             @click="resetFilters"
           >
             Reset
           </button>
-          <button
-            type="button"
-            class="rounded bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-700"
-            @click="exportCsv"
-          >
-            Export CSV
-          </button>
-          <button
-            type="button"
-            class="rounded bg-rose-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-rose-700"
-            @click="exportPdf"
-          >
-            Export PDF
-          </button>
+
+          <div class="ml-auto flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              class="inline-flex items-center rounded-lg bg-emerald-600 px-3 py-1.5 text-[11px] font-semibold text-white shadow-sm ring-1 ring-emerald-500/70 transition hover:bg-emerald-500 hover:shadow-md"
+              @click="exportCsv"
+            >
+              Export CSV
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center rounded-lg bg-rose-600 px-3 py-1.5 text-[11px] font-semibold text-white shadow-sm ring-1 ring-rose-500/70 transition hover:bg-rose-500 hover:shadow-md"
+              @click="exportPdf"
+            >
+              Export PDF
+            </button>
+          </div>
         </div>
       </form>
     </div>
 
-    <div v-if="error" class="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+    <!-- Error -->
+    <div
+      v-if="error"
+      class="rounded-xl border border-red-400/60 bg-red-500/10 px-4 py-3 text-sm text-red-100"
+    >
       {{ error }}
     </div>
 
-    <div class="overflow-x-auto rounded border border-gray-200 bg-white">
-      <table class="min-w-full divide-y divide-gray-200 text-sm">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-4 py-2 text-left font-medium text-gray-700">Date</th>
-            <th class="px-4 py-2 text-left font-medium text-gray-700">
-              Category / Source
-            </th>
-            <th class="px-4 py-2 text-left font-medium text-gray-700">
-              Type
-            </th>
-            <th class="px-4 py-2 text-right font-medium text-gray-700">
-              Amount
-            </th>
-            <th class="px-4 py-2 text-left font-medium text-gray-700">Note</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-if="loading">
-            <td colspan="5" class="px-4 py-4 text-center text-gray-500">
-              Loading report...
-            </td>
-          </tr>
-          <tr v-else-if="!rows.length">
-            <td colspan="5" class="px-4 py-4 text-center text-gray-500">
-              No records match the selected filters.
-            </td>
-          </tr>
-          <tr
-            v-else
-            v-for="(row, idx) in rows"
-            :key="idx"
-            class="hover:bg-gray-50"
-          >
-            <td class="px-4 py-2 align-top text-gray-800">
-              {{ formatDate(row.date) }}
-            </td>
-            <td class="px-4 py-2 align-top text-gray-800">
-              {{ row.category_name || row.source || '-' }}
-            </td>
-            <td class="px-4 py-2 align-top text-gray-700">
-              {{ filters.type === 'income' ? 'Income' : 'Expense' }}
-            </td>
-            <td class="px-4 py-2 align-top text-right font-medium text-gray-900">
-              {{ formatMoney(row.amount) }}
-            </td>
-            <td class="px-4 py-2 align-top text-gray-600">
-              {{ row.note || '-' }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Table -->
+    <div class="overflow-hidden rounded-2xl bg-slate-900/80 shadow-lg ring-1 ring-slate-800">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-800 text-xs sm:text-sm">
+          <thead class="bg-slate-900/80">
+            <tr>
+              <th class="px-4 py-2 text-left text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Date
+              </th>
+              <th class="px-4 py-2 text-left text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Category / Source
+              </th>
+              <th class="px-4 py-2 text-left text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Type
+              </th>
+              <th class="px-4 py-2 text-right text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Amount
+              </th>
+              <th class="px-4 py-2 text-left text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Note
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/80">
+            <tr v-if="loading">
+              <td colspan="5" class="px-4 py-6 text-center text-slate-400">
+                Loading report...
+              </td>
+            </tr>
+            <tr v-else-if="!rows.length">
+              <td colspan="5" class="px-4 py-6 text-center text-slate-400">
+                No records match the selected filters.
+              </td>
+            </tr>
+            <tr
+              v-else
+              v-for="(row, idx) in rows"
+              :key="idx"
+              class="bg-slate-900/60 transition hover:bg-slate-800/80"
+            >
+              <td class="px-4 py-2 align-top text-slate-100">
+                {{ formatDate(row.date) }}
+              </td>
+              <td class="px-4 py-2 align-top text-slate-100">
+                {{ row.category_name || row.source || '-' }}
+              </td>
+              <td class="px-4 py-2 align-top text-slate-300">
+                {{ filters.type === 'income' ? 'Income' : 'Expense' }}
+              </td>
+              <td class="px-4 py-2 align-top text-right font-semibold" :class="filters.type === 'income' ? 'text-emerald-300' : 'text-rose-300'">
+                {{ formatMoney(row.amount) }}
+              </td>
+              <td class="px-4 py-2 align-top text-slate-400">
+                {{ row.note || '-' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>

@@ -1,79 +1,105 @@
 <template>
-  <div class="space-y-4">
-    <div class="flex items-center justify-between">
-      <h2 class="text-2xl font-semibold">Incomes</h2>
+  <div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 class="text-xl font-semibold tracking-tight text-slate-50 sm:text-2xl">
+          Incomes
+        </h2>
+        <p class="text-xs text-slate-400 sm:text-sm">
+          Track and manage all incoming money in one place.
+        </p>
+      </div>
       <button
         type="button"
-        class="rounded bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+        class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm ring-1 ring-emerald-500/60 transition hover:bg-emerald-500 hover:shadow-md"
         @click="openCreateModal"
       >
+        <span class="text-base leading-none">＋</span>
         Add Income
       </button>
     </div>
 
-    <div v-if="error" class="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+    <!-- Error -->
+    <div
+      v-if="error"
+      class="rounded-xl border border-red-400/60 bg-red-500/10 px-4 py-3 text-sm text-red-100"
+    >
       {{ error }}
     </div>
 
-    <div class="overflow-x-auto rounded border border-gray-200 bg-white">
-      <table class="min-w-full divide-y divide-gray-200 text-sm">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-4 py-2 text-left font-medium text-gray-700">Date</th>
-            <th class="px-4 py-2 text-right font-medium text-gray-700">Amount</th>
-            <th class="px-4 py-2 text-left font-medium text-gray-700">Source</th>
-            <th class="px-4 py-2 text-left font-medium text-gray-700">Note</th>
-            <th class="px-4 py-2 text-right font-medium text-gray-700">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-if="loading">
-            <td colspan="5" class="px-4 py-4 text-center text-gray-500">
-              Loading incomes...
-            </td>
-          </tr>
-          <tr v-else-if="!incomes.length">
-            <td colspan="5" class="px-4 py-4 text-center text-gray-500">
-              No incomes recorded yet.
-            </td>
-          </tr>
-          <tr
-            v-else
-            v-for="income in incomes"
-            :key="income.id"
-            class="hover:bg-gray-50"
-          >
-            <td class="px-4 py-2 align-top text-gray-800">
-              {{ income.date }}
-            </td>
-            <td class="px-4 py-2 align-top text-right font-medium text-gray-900">
-              {{ formatAmount(income.amount) }}
-            </td>
-            <td class="px-4 py-2 align-top text-gray-800">
-              {{ income.source || '-' }}
-            </td>
-            <td class="px-4 py-2 align-top text-gray-600">
-              {{ income.note || '-' }}
-            </td>
-            <td class="px-4 py-2 align-top text-right">
-              <button
-                type="button"
-                class="mr-2 text-xs font-medium text-indigo-600 hover:underline"
-                @click="openEditModal(income)"
-              >
-                Edit
-              </button>
-              <button
-                type="button"
-                class="text-xs font-medium text-red-600 hover:underline"
-                @click="confirmDelete(income)"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Table -->
+    <div class="overflow-hidden rounded-2xl bg-slate-900/80 shadow-lg ring-1 ring-slate-800">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-800 text-xs sm:text-sm">
+          <thead class="bg-slate-900/80">
+            <tr>
+              <th class="px-4 py-2 text-left text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Date
+              </th>
+              <th class="px-4 py-2 text-right text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Amount
+              </th>
+              <th class="px-4 py-2 text-left text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Source
+              </th>
+              <th class="px-4 py-2 text-left text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Note
+              </th>
+              <th class="px-4 py-2 text-right text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/80">
+            <tr v-if="loading">
+              <td colspan="5" class="px-4 py-6 text-center text-slate-400">
+                Loading incomes...
+              </td>
+            </tr>
+            <tr v-else-if="!incomes.length">
+              <td colspan="5" class="px-4 py-6 text-center text-slate-400">
+                No incomes recorded yet.
+              </td>
+            </tr>
+            <tr
+              v-else
+              v-for="income in incomes"
+              :key="income.id"
+              class="bg-slate-900/60 transition hover:bg-slate-800/80"
+            >
+              <td class="px-4 py-2 align-top text-slate-100">
+                {{ income.date }}
+              </td>
+              <td class="px-4 py-2 align-top text-right font-semibold text-emerald-300">
+                {{ formatAmount(income.amount) }}
+              </td>
+              <td class="px-4 py-2 align-top text-slate-100">
+                {{ income.source || '-' }}
+              </td>
+              <td class="px-4 py-2 align-top text-slate-400">
+                {{ income.note || '-' }}
+              </td>
+              <td class="px-4 py-2 align-top text-right">
+                <button
+                  type="button"
+                  class="mr-2 text-[11px] font-medium text-indigo-300 transition hover:text-indigo-100"
+                  @click="openEditModal(income)"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="text-[11px] font-medium text-rose-300 transition hover:text-rose-100"
+                  @click="confirmDelete(income)"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <IncomeFormModal
