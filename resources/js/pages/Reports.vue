@@ -136,7 +136,7 @@
             class="hover:bg-gray-50"
           >
             <td class="px-4 py-2 align-top text-gray-800">
-              {{ row.date }}
+              {{ formatDate(row.date) }}
             </td>
             <td class="px-4 py-2 align-top text-gray-800">
               {{ row.category_name || row.source || '-' }}
@@ -241,6 +241,14 @@ const formatMoney = (value) => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+};
+
+const formatDate = (value) => {
+  if (!value) return '';
+  // Handle ISO strings like "2025-12-01T00:00:00.000000Z"
+  const str = String(value);
+  if (str.length >= 10) return str.slice(0, 10);
+  return str;
 };
 
 onMounted(async () => {

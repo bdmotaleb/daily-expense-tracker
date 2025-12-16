@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Expense;
 use App\Models\Income;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -74,6 +75,46 @@ class DashboardController extends Controller
                 ];
             });
 
+        // Overall totals (all time)
+        $totalIncome = (float) Income::where('user_id', $user->id)->sum('amount');
+        $totalExpense = (float) Expense::where('user_id', $user->id)->sum('amount');
+
+        // Month-wise income & expense trend for the last 12 months
+        $startPeriod = Carbon::now()->subMonths(11)->startOfMonth();
+        $endPeriod = Carbon::now()->endOfMonth();
+
+        $incomeByMonth = Income::select(
+            DB::raw("DATE_FORMAT(date, '%Y-%m') as ym"),
+            DB::raw('SUM(amount) as total')
+        )
+            ->where('user_id', $user->id)
+            ->whereBetween('date', [$startPeriod->toDateString(), $endPeriod->toDateString()])
+            ->groupBy('ym')
+            ->orderBy('ym')
+            ->pluck('total', 'ym');
+
+        $expenseByMonth = Expense::select(
+            DB::raw("DATE_FORMAT(date, '%Y-%m') as ym"),
+            DB::raw('SUM(amount) as total')
+        )
+            ->where('user_id', $user->id)
+            ->whereBetween('date', [$startPeriod->toDateString(), $endPeriod->toDateString()])
+            ->groupBy('ym')
+            ->orderBy('ym')
+            ->pluck('total', 'ym');
+
+        $monthlyTrend = [];
+
+        for ($date = $startPeriod->copy(); $date <= $endPeriod; $date->addMonth()) {
+            $key = $date->format('Y-m');
+
+            $monthlyTrend[] = [
+                'month' => $key,
+                'income' => (float) ($incomeByMonth[$key] ?? 0),
+                'expense' => (float) ($expenseByMonth[$key] ?? 0),
+            ];
+        }
+
         return response()->json([
             'month' => $month,
             'today' => [
@@ -86,8 +127,14 @@ class DashboardController extends Controller
                 'expense' => $monthlyExpense,
                 'balance' => $monthlyIncome - $monthlyExpense,
             ],
+            'overall' => [
+                'income' => $totalIncome,
+                'expense' => $totalExpense,
+                'balance' => $totalIncome - $totalExpense,
+            ],
             'expense_by_category' => $expenseByCategory,
             'daily_expense' => $dailyExpense,
+            'monthly_trend' => $monthlyTrend,
         ]);
     }
 }

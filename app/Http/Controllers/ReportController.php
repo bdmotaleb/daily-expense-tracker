@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Models\Expense;
 use App\Models\Income;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
+use Carbon\Carbon;
 use Dompdf\Dompdf;
 
 class ReportController extends Controller
@@ -38,7 +38,11 @@ class ReportController extends Controller
         [$type, $from, $to, $categoryId] = $this->resolveFilters($request);
 
         $rows = $this->buildQuery($request->user()->id, $type, $from, $to, $categoryId)
-            ->get();
+            ->get()
+            ->map(function ($row) {
+                $row->date = $row->date ? Carbon::parse($row->date)->toDateString() : $row->date;
+                return $row;
+            });
 
         $filename = "report_{$type}_{$from}_{$to}.csv";
 
@@ -76,7 +80,11 @@ class ReportController extends Controller
         [$type, $from, $to, $categoryId] = $this->resolveFilters($request);
 
         $rows = $this->buildQuery($request->user()->id, $type, $from, $to, $categoryId)
-            ->get();
+            ->get()
+            ->map(function ($row) {
+                $row->date = $row->date ? Carbon::parse($row->date)->toDateString() : $row->date;
+                return $row;
+            });
 
         $html = view('reports.pdf', [
             'type' => $type,
